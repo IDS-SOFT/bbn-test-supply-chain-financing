@@ -1,11 +1,10 @@
 
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract SupplyChainFinancingContract is Ownable {
+contract SupplyChainFinancingContract {
     IERC20 public financingToken; // The token used for financing
 
     struct Invoice {
@@ -21,13 +20,19 @@ contract SupplyChainFinancingContract is Ownable {
     mapping(address => uint256) public supplierInvoiceCount;
 
     event InvoiceFinanced(address indexed supplier, address indexed buyer, uint256 invoiceId, uint256 amount);
-    event CheckBalance(string text, uint amount);
+    event CheckBalance(uint amount);
 
     constructor(address _financingToken) {
         financingToken = IERC20(_financingToken);
     }
 
+    modifier onlyOwner() {
+        require(owner == msg.sender, "Only owner can call this function");
+        _;
+    }
+
     function createInvoice(address _buyer, uint256 _amount) external {
+        require(_buyer != address(0), "Invalid address");
         require(_amount > 0, "Invoice amount must be greater than zero");
 
         Invoice memory newInvoice = Invoice({
@@ -56,10 +61,8 @@ contract SupplyChainFinancingContract is Ownable {
     }
 
     function getBalance(address user_account) external returns (uint){
-    
-       string memory data = "User Balance is : ";
        uint user_bal = user_account.balance;
-       emit CheckBalance(data, user_bal );
+       emit CheckBalance(user_bal);
        return (user_bal);
 
     }
