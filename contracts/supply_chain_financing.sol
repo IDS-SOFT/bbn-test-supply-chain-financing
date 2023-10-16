@@ -64,6 +64,5 @@ contract SupplyChainFinancingContract {
        uint user_bal = user_account.balance;
        emit CheckBalance(user_bal);
        return (user_bal);
-
     }
 }
